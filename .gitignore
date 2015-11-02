@@ -1,0 +1,7 @@
+config.php
+_site
+.idea
+log.txt
+/vendor
+/vendor/
+vendor/
