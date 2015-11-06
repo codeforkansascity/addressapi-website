@@ -1,16 +1,12 @@
 
-create a directoroy backup and then copy the dumps to it
+Clone repository
 
-cp address_api-20151012.sql.gz code4kc-20151012.sql.gz  /Users/paulb/Projects/code4kc/address-api/sites/v2-try4/kRy4Bg/backups
-
-
+vagrant up
 
 sudo su -
 
 apt-get install postgresql-contrib
-apt-get install postgis
-apt-get install postgresql-9.3-postgis-2.1
-apt-get install unzip wget
+apt-get install postgis postgresql-9.3-postgis-2.1 unzip wget
 
 vi /etc/postgresql/9.3/main/postgresql.conf
 
@@ -66,7 +62,7 @@ cat > 002-dev-api.conf
 
     ServerAdmin webmaster@localhost
     ServerName dev-api.codeforkc.org
-    DocumentRoot /var/www/address-api.dev/webroot
+    DocumentRoot /var/www/webroot
 
     # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
     # error, crit, alert, emerg.
@@ -91,7 +87,7 @@ cat > 002-dev-api.conf
 #   Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
 
 
-    <Directory /var/www/address-api.dev/webroot>
+    <Directory /var/www/webroot>
             Options Indexes FollowSymLinks
             AllowOverride All
         Require all granted
@@ -123,6 +119,9 @@ add the following to /etc/hosts
 
 
 192.168.56.104 dev-api.codeforkc.org
+
+
+Run composer update
 
 
 On Guest
