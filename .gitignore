@@ -5,3 +5,6 @@ log.txt
 /vendor
 /vendor/
 vendor/
+.vagrant/
+puphpet/files/dot/ssh/
+puphpet/files/dot/ssh
