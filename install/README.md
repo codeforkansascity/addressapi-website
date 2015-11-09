@@ -1,62 +1,157 @@
 
-Clone repository
 
+# Create site
+
+1. Clone repository
+
+2. Run composer update
+
+# Create image
+
+
+````
 vagrant up
+vagrant ssh
+````
 
+````
 sudo su -
 
-apt-get install postgresql-contrib
-apt-get install postgis postgresql-9.3-postgis-2.1 unzip wget
+apt-get install postgresql-contrib postgis postgresql-9.3-postgis-2.1 php5-pgsql unzip wget
+````
 
+
+# Install module mod_headers
+
+````
+a2enmod headers
+````
+
+
+#  Configure PostGres 
+````
 vi /etc/postgresql/9.3/main/postgresql.conf
+````
 
 Change the listen_addresses to your IP address
 
+````
 listen_addresses = '192.168.56.1,192.168.56.104,localhost'      # what IP address(es) to listen on;
+````
 
 
+````
 sudo vi /etc/postgresql/9.3/main/pg_hba.conf 
+````
 
 # Remote from Vagrant Host
+````
 host    all             all             all                     password
+````
 
 
+````
 /etc/init.d/postgresql stop
 
 /etc/init.d/postgresql start
 
 exit
+````
 
+# Create database
+
+````
 sudo su - postgres
+````
+````
 psql
+````
 
-create database paul WITH ENCODING 'UTF8' TEMPLATE=template0; 
 
-create database code4kc  WITH ENCODING 'UTF8' TEMPLATE=template0;
-create database address_api  WITH ENCODING 'UTF8' TEMPLATE=template0;
-\c code4kc
+# Final db
+````
+CREATE DATABASE c4kc_address_api  WITH ENCODING 'UTF8' TEMPLATE=template0;
+GRANT ALL PRIVILEGES ON DATABASE c4kc_address_api TO c4kc;
+\c c4kc_address_api
 CREATE EXTENSION postgis;
 CREATE EXTENSION postgis_topology;
 CREATE EXTENSION postgis_sfcgal;
 CREATE EXTENSION fuzzystrmatch;
 CREATE EXTENSION address_standardizer;
-SELECT postgis_full_version();
 \q
+````
 
 
-Now restore databases
 
-   cd /var/www/backup
-   zcat address_api-20151012.sql.gz | psql address_api
-   zcat code4kc-20151012.sql.gz | psql code4kc 
+
+# Restore databases
+
+````
+   cd /var/www/INSTALL/sql
+   zcat c4kc_address_api.sql.gz | psql c4kc_address_api
+````
+
+
+
+# Set permissions
+````
+psql
+\c c4kc_address_api
+
+alter table  address                     OWNER TO c4kc;
+alter table  address_alias               OWNER TO c4kc;
+alter table  address_id_seq              OWNER TO c4kc;
+alter table  address_id_seq_02           OWNER TO c4kc;
+alter table  address_key_id_seq          OWNER TO c4kc;
+alter table  address_keys                OWNER TO c4kc;
+alter table  address_string_alias_id_seq OWNER TO c4kc;
+alter table  census_attributes           OWNER TO c4kc;
+alter table  city_address_attributes     OWNER TO c4kc;
+alter table  county_address_attributes   OWNER TO c4kc;
+alter table  county_address_data         OWNER TO c4kc;
+alter table  datas                       OWNER TO c4kc;
+alter table  datas_id                    OWNER TO c4kc;
+alter table  datasets                    OWNER TO c4kc;
+alter table  datasets_id                 OWNER TO c4kc;
+alter table  fields                      OWNER TO c4kc;
+alter table  fields_id                   OWNER TO c4kc;
+alter table  geography_columns           OWNER TO c4kc;
+alter table  geometry_columns            OWNER TO c4kc;
+alter table  jd_wp                       OWNER TO c4kc;
+alter table  jd_wp_id_seq                OWNER TO c4kc;
+alter table  loads                       OWNER TO c4kc;
+alter table  loads_id                    OWNER TO c4kc;
+alter table  neighborhoods               OWNER TO c4kc;
+alter table  neighborhoods_id_seq        OWNER TO c4kc;
+alter table  raster_columns              OWNER TO c4kc;
+alter table  raster_overviews            OWNER TO c4kc;
+alter table  sources                     OWNER TO c4kc;
+alter table  sources_id                  OWNER TO c4kc;
+alter table  spatial_ref_sys             OWNER TO c4kc;
+alter table  layer                       OWNER TO c4kc;
+alter table  topology                    OWNER TO c4kc;
+alter table  topology_id_seq             OWNER TO c4kc;
+
+\d
+
+SELECT postgis_full_version();
+````
+
+
+
 
 
 Now create website
 
 
+````
 cd /etc/apache2/sites-available
+````
 
+````
 cat > 002-dev-api.conf
+
+````
 
 <VirtualHost *:80>
 
@@ -82,22 +177,21 @@ cat > 002-dev-api.conf
 
     DirectoryIndex index.php
 
-#   Header set Access-Control-Allow-Origin "*"
-#   Header set Access-Control-Allow-Credentials "true"
-#   Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
-
 
     <Directory /var/www/webroot>
-            Options Indexes FollowSymLinks
-            AllowOverride All
-        Require all granted
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Credentials "true"
+        Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
 
-    <FilesMatch "\.php$">
-          Require all granted
-                SetHandler proxy:fcgi://127.0.0.1:9000
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted 
 
-                    </FilesMatch>
-
+        <FilesMatch "\.php$">
+            Require all granted
+            SetHandler proxy:fcgi://127.0.0.1:9000
+        </FilesMatch>
+        
         RewriteEngine On
         RewriteCond %{REQUEST_FILENAME} !-d
         RewriteCond %{REQUEST_FILENAME} !-f
@@ -107,110 +201,19 @@ cat > 002-dev-api.conf
 
     </Directory>
 </VirtualHost>
+````
 
+````
 cd ../sites-enabled/
 ln -s ../sites-available/002-dev-api.conf .
 apache2ctl restart
-
+````
 
 On Host
 
 add the following to /etc/hosts
 
 
-192.168.56.104 dev-api.codeforkc.org
-
-
-Run composer update
-
-
-On Guest
-
-sudo su - postgres
-
-createuser c4kc
-
-psql
-
-\s
-ALTER USER c4kc with encrypted password 'data';
-GRANT ALL PRIVILEGES ON DATABASE address_api TO c4kc;
-GRANT ALL PRIVILEGES ON DATABASE code4kc TO c4kc;
-
-CREATE DATABASE aa_api  WITH ENCODING 'UTF8' TEMPLATE=template0;
-CREATE DATABASE aa_gis  WITH ENCODING 'UTF8' TEMPLATE=template0;
-GRANT ALL PRIVILEGES ON DATABASE aa_api TO c4kc;
-GRANT ALL PRIVILEGES ON DATABASE aa_gis TO c4kc;
-
-
-
-
-
-
--- CREATE EXTENSION postgis_tiger_geocoder; Did not do this for address api
-
-SELECT postgis_full_version();
-
-GRANT USAGE ON SCHEMA tiger TO PUBLIC;
-GRANT USAGE ON SCHEMA tiger_data TO PUBLIC;
-GRANT SELECT, REFERENCES, TRIGGER    ON ALL TABLES IN SCHEMA tiger TO PUBLIC;
-GRANT SELECT, REFERENCES, TRIGGER    ON ALL TABLES IN SCHEMA tiger_data TO PUBLIC;
-GRANT EXECUTE    ON ALL FUNCTIONS IN SCHEMA tiger TO PUBLIC;
-ALTER DEFAULT PRIVILEGES IN SCHEMA tiger_dataGRANT SELECT, REFERENCES    ON TABLES TO PUBLIC;
-
-
-\l
-\t
-\a
-\o /gisdata/nationscript.sh
-        SELECT loader_generate_nation_script('sh');
-        \o
-
-
-cd /gisdata
-vi nationscript.sh
-
-Change password 123
-Location of PG to /usr/bin
-
-
-
-sh nationscript.sh
-
-
-
-
------
-
-update pg_database set encoding = pg_char_to_encoding('UTF8') where datname = 'aa_api';
-update pg_database set encoding = pg_char_to_encoding('UTF8') where datname = 'aa_gis';
-update pg_database set encoding = pg_char_to_encoding('UTF8') where datname = 'address_api';
-update pg_database set encoding = pg_char_to_encoding('UTF8') where datname = 'code4kc';
-update pg_database set encoding = pg_char_to_encoding('UTF8') where datname = 'aa_api';
-# Sample Apache Configuration
-
 ````
-# -----------------------------------------------
-# ADDRESS_API.CODEFORKC.ORG
-# -----------------------------------------------
-<VirtualHost *:80>
-    ServerName address_api.codeforkc.org
-    DocumentRoot /var/www/address_api.org/webroot
-    DirectoryIndex index.php
-
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Credentials true
-    Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
-
-    <Directory "/var/www/address_api.org/webroot/">
-       RewriteEngine On
-       RewriteCond %{REQUEST_FILENAME} !-d
-       RewriteCond %{REQUEST_FILENAME} !-f
-       RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
-       Options -Indexes FollowSymLinks
-       Order allow,deny
-       Allow from all
-    </Directory>
-
-</VirtualHost>
+192.168.56.108 dev-api.codeforkc.org
 ````
