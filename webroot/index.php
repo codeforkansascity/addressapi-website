@@ -1,6 +1,7 @@
 <?php
 // http://api.codeforkc.org/normalize_address/v0000/210%20West%2019th%20terrace/?city=KANSAS%20CITY&state=MO
 
+
 require '../vendor/autoload.php';
 require '../config/config.php';
 
@@ -680,7 +681,7 @@ function connect_to_address_database()
     global $DB_HOST;
 
     try {
-        $dbh = new PDO("pgsql:dbname=$DB_NAME", $DB_USER, $DB_PASS);
+        $dbh = new PDO("pgsql:host=$DB_HOST; dbname=$DB_NAME", $DB_USER, $DB_PASS);
     } catch (PDOException $e) {
         error_log($e->getMessage() . ' ' . __FILE__ . ' ' . __LINE__);
         return false;
@@ -697,13 +698,15 @@ function connect_to_address_database()
 function connect_to_spatial_database()
 {
 
-    global $DB_CODE4KC_NAME;
-    global $DB_CODE4KC_USER;
-    global $DB_CODE4KC_PASS;
-    global $DB_CODE4KC_HOST;
+    global $DB_NAME;
+    global $DB_USER;
+    global $DB_PASS;
+    global $DB_HOST;
+
+print "pgsql:host=$DB_HOST; dbname=$DB_NAME, $DB_USER, $DB_PASS";
 
     try {
-        $dbh = new PDO("pgsql:dbname=$DB_CODE4KC_NAME", $DB_CODE4KC_USER, $DB_CODE4KC_PASS);
+        $dbh = new PDO("pgsql:host=$DB_HOST; dbname=$DB_NAME", $DB_USER, $DB_PASS);
     } catch (PDOException $e) {
         error_log($e->getMessage() . ' ' . __FILE__ . ' ' . __LINE__);
         return false;
