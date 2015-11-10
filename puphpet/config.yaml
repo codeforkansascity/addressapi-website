@@ -3,15 +3,15 @@ vagrantfile:
     vm:
         box: puphpet/ubuntu1404-x64
         box_url: puphpet/ubuntu1404-x64
-        hostname: dev-api.localhost
+        hostname: dev.api.localhost
         memory: '1024'
         cpus: '1'
         chosen_provider: virtualbox
         network:
-            private_network: 192.168.56.109
+            private_network: 192.168.56.209
             forwarded_port:
                 vflnp_lg3s3dpk99hz:
-                    host: '9989'
+                    host: '9982'
                     guest: '22'
         post_up_message: ''
         provider:
