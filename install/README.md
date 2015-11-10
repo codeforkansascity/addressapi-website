@@ -4,20 +4,32 @@
 
 1. Clone repository
 
+````
+    git clone git@github.com:zmon/address-api-v0.git your-dir
+````
+
 2. Run composer update
+
+````
+    cd your-dir
+    composer update
+````
 
 # Create image
 
 
 ````
-vagrant up
-vagrant ssh
+    vagrant up
+    vagrant ssh
 ````
 
-````
-sudo su -
+You should now be logged into the new virtual box
 
-apt-get install postgresql-contrib postgis postgresql-9.3-postgis-2.1 php5-pgsql unzip wget
+# Install postgres, unzip, and wget
+
+````
+    sudo su -
+    apt-get install postgresql-contrib postgis postgresql-9.3-postgis-2.1 php5-pgsql unzip wget
 ````
 
 
@@ -63,6 +75,14 @@ exit
 ````
 sudo su - postgres
 ````
+
+Create user
+
+````
+createuser c4kc
+````
+
+
 ````
 psql
 ````
@@ -71,6 +91,7 @@ psql
 # Final db
 ````
 CREATE DATABASE c4kc_address_api  WITH ENCODING 'UTF8' TEMPLATE=template0;
+ALTER USER c4kc with encrypted password 'data';
 GRANT ALL PRIVILEGES ON DATABASE c4kc_address_api TO c4kc;
 \c c4kc_address_api
 CREATE EXTENSION postgis;
@@ -215,5 +236,23 @@ add the following to /etc/hosts
 
 
 ````
-192.168.56.108 dev-api.codeforkc.org
+192.168.56.209 dev.api.codeforkc.org
+````
+
+
+
+# Setup config file
+
+````
+<?php
+
+global $DB_NAME;
+global $DB_USER;
+global $DB_PASS;
+global $DB_HOST;
+
+if ( !empty( $_SERVER["DB_HOST"] )) { $DB_HOST = $_SERVER["DB_HOST"]; } else { $DB_HOST = 'localhost'; }
+if ( !empty( $_SERVER["DB_USER"] )) { $DB_USER = $_SERVER["DB_USER"]; } else { $DB_USER = 'c4kc'; }
+if ( !empty( $_SERVER["DB_PASS"] )) { $DB_PASS = $_SERVER["DB_PASS"]; } else { $DB_PASS = 'data'; }
+if ( !empty( $_SERVER["DB_NAME"] )) { $DB_NAME = $_SERVER["DB_NAME"]; } else { $DB_NAME = 'c4kc_address_api'; }
 ````
