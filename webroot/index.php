@@ -525,14 +525,21 @@ $app->get('/address-attributes/V0/:address/', function ($id) use ($app) {
                 );
             }
         } else {
+        $ret = array(
+            'code' => 500,
+            'status' => 'failed',
+            'message' => 'Unable to connect to database.',
+            'data' => array()
+        );
+        }
+    } else {
+
             $ret = array(
                 'code' => 404,
                 'status' => 'error',
                 'message' => 'State or City was not valid.',
                 'data' => array()
             );
-        }
-    } else {
         $ret = array(
             'code' => 500,
             'status' => 'failed',
