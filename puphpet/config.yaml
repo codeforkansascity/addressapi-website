@@ -3,7 +3,7 @@ vagrantfile:
     vm:
         box: puphpet/ubuntu1404-x64
         box_url: puphpet/ubuntu1404-x64
-        hostname: dev.api.localhost
+        hostname: dev.api-8.localhost
         memory: '1024'
         cpus: '1'
         chosen_provider: virtualbox

@@ -163,6 +163,13 @@ SELECT postgis_full_version();
 exit
 
 
+Install GDAL/OGR
+
+````
+sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable && sudo apt-get update
+sudo apt-get install gdal-bin
+````
+
 
 Now create website
 
