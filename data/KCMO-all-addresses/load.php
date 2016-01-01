@@ -44,7 +44,7 @@ global $dbh;
 
 $totals = array(
     'input' => array('insert' => 0, 'update' => 0, 'N/A' => 0, 'error' => 0),
-    'kcmo_all_addresses' => array('insert' => 0, 'update' => 0, 'N/A' => 0, 'error' => 0),
+    'tmp_kcmo_all_addresses' => array('insert' => 0, 'update' => 0, 'N/A' => 0, 'error' => 0),
 );
 print "dbname=$DB_NAME, $DB_USER, $DB_PASS\n";
 try {
@@ -84,7 +84,7 @@ foreach ($fields AS $f => $v) {
     $sep = ', ';
 }
 
-$sql = 'INSERT INTO kcmo_all_addresses (' . $names . ') VALUES (' . $values . ')';
+$sql = 'INSERT INTO tmp_kcmo_all_addresses (' . $names . ') VALUES (' . $values . ')';
 $add_query = $dbh->prepare("$sql  -- " . __FILE__ . ' ' . __LINE__);
 
 if (($handle = fopen("KCMO_Address_11_24_2015.csv", "r")) !== FALSE) {
@@ -114,19 +114,19 @@ if (($handle = fopen("KCMO_Address_11_24_2015.csv", "r")) !== FALSE) {
             $ret = $add_query->execute($new_rec);
             if (!$ret) {
 
-                if ($totals['kcmo_all_addresses']['error'] > 20) break;
+                if ($totals['tmp_kcmo_all_addresses']['error'] > 20) break;
 
-                $totals['kcmo_all_addresses']['error']++;
+                $totals['tmp_kcmo_all_addresses']['error']++;
                 print_r($new_rec);
                 var_dump($ret);
                 print("\nROW=$row\n----------------------------------\n ");
             } else {
-                $totals['kcmo_all_addresses']['insert']++;
+                $totals['tmp_kcmo_all_addresses']['insert']++;
             }
         } catch (PDOException  $e) {
-            $totals['kcmo_all_addresses']['error']++;
+            $totals['tmp_kcmo_all_addresses']['error']++;
 
-            if ($totals['kcmo_all_addresses']['error'] > 20) break;
+            if ($totals['tmp_kcmo_all_addresses']['error'] > 20) break;
 
             die("ROW=$row " . $e->getMessage() . ' ' . __FILE__ . ' ' . __LINE__);
 

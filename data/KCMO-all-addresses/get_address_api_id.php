@@ -47,7 +47,7 @@ class fix_id
         $this->address_converter = new AddressStandardizationSolution();
 
         $sql = 'SELECT id, address_api_id, kiva_pin, city_apn, addr, fraction, prefix, street, street_type, suite, city, state, zip
-FROM kcmo_all_addresses';
+FROM tmp_kcmo_all_addresses';
 
         $query = $this->dbh->prepare("$sql  -- " . __FILE__ . ' ' . __LINE__);
 
@@ -59,7 +59,7 @@ FROM kcmo_all_addresses';
             return false;
         }
 
-        $update_query = $this->dbh->prepare('UPDATE kcmo_all_addresses SET address_api_id = :address_api_id , zip = :zip WHERE id = :id;');
+        $update_query = $this->dbh->prepare('UPDATE tmp_kcmo_all_addresses SET address_api_id = :address_api_id , zip = :zip WHERE id = :id;');
 
         $row = 0;
         $count = 0;
