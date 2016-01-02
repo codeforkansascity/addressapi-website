@@ -48,7 +48,12 @@ $totals = array(
     'input' => array('insert' => 0, 'update' => 0, 'NotJA' => 0, 'NotFound' => 0, 'N/A' => 0, 'error' => 0),
     'tmp_kcmo_all_addresses' => array('insert' => 0, 'update' => 0, 'NotJA' => 0, 'NotFound' => 0, 'N/A' => 0, 'error' => 0),
 );
-print "dbname=$DB_NAME, $DB_USER, $DB_PASS\n";
+
+print "\n" . $argv[0] . "\n";
+for ( $i =0; $i < strlen($argv[0]); $i++) print "-";
+print "\n";
+print "dbname=$DB_NAME\n";
+
 try {
     $dbh = new PDO("pgsql:host=localhost; dbname=$DB_NAME", $DB_USER, $DB_PASS);
 } catch (PDOException $e) {
@@ -131,7 +136,7 @@ while ($address_rec = $query->fetch(PDO::FETCH_ASSOC)) {
 
     } else {
         $totals['tmp_kcmo_all_addresses']['NotFound']++;
-        print "ERROR NOT FOUND $single_line_address - " . $address_rec['city_apn'] . "\n";
+//        print "ERROR NOT FOUND $single_line_address - " . $address_rec['city_apn'] . "\n";
     }
 
 }
