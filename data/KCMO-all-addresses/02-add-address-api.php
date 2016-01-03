@@ -153,7 +153,7 @@ foreach ($totals AS $table => $counts) {
 print "--------------------------------------------------------------------------\n\n";
 
 
-print "Number of lines processed $row\n\n";
+print "Number of lines processed $row\n";
 
 // Calcuate how much time this took
 
@@ -171,7 +171,7 @@ $ru = getrusage();
 $str = "This process used " . rutime($ru, $rustart, "utime") .
     " ms for its computations\n";
 
-print "\n";
+
 print $str;
 
 $str = "It spent " . rutime($ru, $rustart, "stime") .
@@ -183,5 +183,5 @@ print $str;
 // Print end message with time it took
 print "Run time:  $time_diff\n";
 
-print "\n\n";
+
 

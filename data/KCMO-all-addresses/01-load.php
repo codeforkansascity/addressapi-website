@@ -94,7 +94,7 @@ if (($handle = fopen("KCMO_Address_11_24_2015.csv", "r")) !== FALSE) {
     $row = 0;
     while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
         $row++;
-if ( $row > 10) die;
+
         if ($row == 1) {
             $totals['input']['N/A']++;
             continue;
@@ -116,9 +116,6 @@ if ( $row > 10) die;
         try {
             $ret = $add_query->execute($new_rec);
             if (!$ret) {
-
-                if ($totals['tmp_kcmo_all_addresses']['error'] > 20) break;
-
                 $totals['tmp_kcmo_all_addresses']['error']++;
                 print_r($new_rec);
                 var_dump($ret);
@@ -151,7 +148,7 @@ foreach ($totals AS $table => $counts) {
 print "--------------------------------------------------------------------------\n\n";
 
 
-print "Number of lines processed $row\n\n";
+print "Number of lines processed $row\n";
 
 // Calcuate how much time this took
 
@@ -181,5 +178,5 @@ print $str;
 // Print end message with time it took
 print "Run time:  $time_diff\n";
 
-print "\n\n";
+
 

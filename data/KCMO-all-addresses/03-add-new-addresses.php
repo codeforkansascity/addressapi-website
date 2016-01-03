@@ -65,7 +65,7 @@ try {
 $address_converter = new Convissor\address\AddressStandardizationSolution();
 $address = new \Code4KC\Address\Address($dbh, true);
 $address_alias = new \Code4KC\Address\AddressAlias($dbh, true);
-// $address_keys = new \Code4KC\Address\AddressKeys($dbh, true);
+$address_keys = new \Code4KC\Address\AddressKeys($dbh, true);
 
 $update_query = $dbh->prepare('UPDATE tmp_kcmo_all_addresses SET address_api_id = :address_api_id WHERE id = :id;');
 
@@ -144,6 +144,8 @@ while ($address_rec = $query->fetch(PDO::FETCH_ASSOC)) {
         $address_alias->add($new_rec);
         $totals['address_alias']['insert']++;
 
+        // Update temporary table with address ids
+
         $values = array(
             ':address_api_id' => $address_id,
             ':id' => $address_rec['id']
@@ -155,6 +157,26 @@ while ($address_rec = $query->fetch(PDO::FETCH_ASSOC)) {
         } catch (PDOException  $e) {
             $totals['tmp_kcmo_all_addresses']['error']++;
             print ('UPDATE ERROR: ' . $e->getMessage() . "\n");
+        }
+
+        // ADD to address keys
+
+        $new_rec = array('address_id' => $address_id,
+            'city_address_id' => $address_rec['kiva_pin'],
+            'county_address_id' => $address_rec['city_apn']
+        );
+
+        if ($address_keys_rec = $address_keys->find_by_address_id($address_id)) {
+            $address_key_id = $address_keys_rec['id'];
+            if ($address_key_differences = $address_keys->diff($address_keys_rec, $new_rec)) {
+                $address_keys->update($address_key_id, $address_key_differences);
+                $totals['address_keys']['update']++;
+            } else {
+                $totals['address_keys']['N/A']++;
+            }
+        } else {
+            $address_keys->add($new_rec);
+            $totals['address_keys']['insert']++;
         }
 
     } else {
@@ -177,4 +199,32 @@ foreach ($totals AS $table => $counts) {
 print "--------------------------------------------------------------------------\n\n";
 
 
-print "Number of lines processed $row including header\n\n";
+print "Number of lines processed $row including header\n";
+
+// Calcuate how much time this took
+
+$end_time = time();
+$time_diff = $end_time - $start_time;
+
+if ($time_diff > 0) {
+    $time_diff = time_elapsed_A($time_diff);
+} else {
+    $time_diff = ' 0 seconds';
+}
+
+
+$ru = getrusage();
+$str = "This process used " . rutime($ru, $rustart, "utime") .
+    " ms for its computations\n";
+
+
+print $str;
+
+$str = "It spent " . rutime($ru, $rustart, "stime") .
+    " ms in system calls\n";
+
+print $str;
+
+
+// Print end message with time it took
+print "Run time:  $time_diff\n";
