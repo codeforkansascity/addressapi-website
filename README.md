@@ -46,5 +46,12 @@ Sources of data attributes:
 
 We plan to have some simple web pages developed on top of this so people can make queries about the data.
 
+# Parts of the project.
+This project has been broken up into 6 repositories.
 
+* [addressapi-data](https://github.com/codeforkansascity/addressapi-data): Is the data catalog or data dictionary of the data that is in the Address-API or has been requested to be loaded into the Address-API.
+* [addressapi-examples](https://github.com/codeforkansascity/addressapi-examples): Sample code for accessing the Address-API data.
+* [addressapi-api](https://github.com/codeforkansascity/addressapi-api): Concerning the processes and issues of providing APIs to customers of the Address-API application
+* [addressapi-load](https://github.com/codeforkansascity/addressapi-load): Concerning the processes and issues of collecting and loading data into the Address-API database.
+* [addressapi-database](https://github.com/codeforkansascity/addressapi-database): Concerning the processes and issues of creating and maintaining the Address-API database.
 
